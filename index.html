@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Process Text File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #0078d4;
+        }
+
+        input[type="file"], input[type="text"], button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            width: 80%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #0078d4;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005a8d;
+        }
+
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9f7fc;
+            border: 1px solid #cce7f7;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+
+        .download-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Upload and Process</h1>
+        <input type="file" id="fileInput" accept=".txt" />
+        <br>
+        <input type="text" id="fileName" placeholder="Enter result file name (without extension)" />
+        <br>
+        <button onclick="processFile()">Upload and Process</button>
+        <p id="output"></p>
+        
+        <div class="download-container">
+            <button id="downloadBtn" style="display: none;" onclick="downloadFile()">Download Processed File</button>
+        </div>
+    </div>
+
+    <script>
+        let processedContent = '';
+
+        function processFile() {
+            const fileInput = document.getElementById('fileInput');
+            const fileNameInput = document.getElementById('fileName');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file.');
+                return;
+            }
+
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const fileContent = event.target.result;
+                // Removing the unwanted part and getting the content after the first ":"
+                processedContent = fileContent.replace(/^https:\/\/100082\.connect\.garena\.com\/:.*?:/, '');
+                document.getElementById('output').innerText = processedContent;
+                
+                // Show download button if there is valid content
+                if (processedContent) {
+                    document.getElementById('downloadBtn').style.display = 'inline-block';
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        function downloadFile() {
+            const fileNameInput = document.getElementById('fileName').value;
+            const fileName = fileNameInput ? fileNameInput : 'result'; // Default to 'result' if no name is provided
+            const blob = new Blob([processedContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName + '.txt'; // Append .txt extension
+            link.click();
+        }
+    </script>
+</body>
+</html>
